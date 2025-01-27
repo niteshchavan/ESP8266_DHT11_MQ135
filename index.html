@@ -1,0 +1,167 @@
+<html>
+<title>WEB</title>
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>Gauge with Color Ranges</title>
+  <link href="https://playground.anychart.com/gallery/src/Circular_Gauges/Gauge_with_Color_Ranges/iframe" rel="canonical">
+  <meta content="Circular Gauge,Gauges" name="keywords">
+  <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description">
+  <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" rel="stylesheet" type="text/css">
+  <style>html,
+body,
+#container {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}</style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-circular-gauge.min.js"></script>
+  
+    <script>
+        anychart.onDocumentReady(function () {
+		
+			async function fetchData() {
+			
+				try {
+					const response = await fetch('/getData'); // Fetch data from the server
+					const data = await response.json(); // Parse JSON response
+					console.log("Fetched data:", data); // Log the fetched data to the console
+
+
+                    const ppm = parseFloat(data.smoke); // Extract PPM value
+
+                    // Create data set on our PPM data
+                    const dataSet = anychart.data.set([ppm]);
+
+					var gauge = anychart.gauges.circular();
+					
+						gauge
+							.fill('#fff')
+							.stroke(null)
+							.padding(0)
+							.margin(100)
+							.startAngle(270)
+							.sweepAngle(180);
+							
+						gauge
+							.axis()
+							.labels()
+							.padding(5)
+							.fontSize(14)
+							.position('outside')
+
+						  gauge.data(dataSet);
+						  gauge
+							.axis()
+							.scale()
+							.minimum(0)
+							.maximum(100)
+							.ticks({ interval: 10 })
+							.minorTicks({ interval: 5 });
+
+						  gauge
+							.axis()
+							.fill('#545f69')
+							.width(1)
+							.ticks({ type: 'line', fill: 'white', length: 2 });
+
+						  gauge.title('AQI');
+						  gauge
+							.title()
+							.useHtml(true)
+							.padding(0)
+							.fontColor('#212121')
+							.hAlign('center')
+							.margin([0, 0, 10, 0]);
+
+						  gauge
+							.needle()
+							.stroke('2 #545f69')
+							.startRadius('5%')
+							.endRadius('90%')
+							.startWidth('0.1%')
+							.endWidth('0.1%')
+							.middleWidth('0.1%');
+
+						  gauge.cap().radius('3%').enabled(true).fill('#545f69');
+
+						  gauge.range(0, {
+							from: 0,
+							to: 30,
+							position: 'inside',
+							fill: '#dd2c00 0.4',
+							startSize: 50,
+							endSize: 50,
+							radius: 98
+						  });
+
+						  gauge.range(1, {
+							from: 30,
+							to: 70,
+							position: 'inside',
+							fill: '#ffa000 0.4',
+							startSize: 50,
+							endSize: 50,
+							radius: 98
+						  });
+
+						  gauge.range(2, {
+							from: 70,
+							to: 100,
+							position: 'inside',
+							fill: '#009900 0.4',
+							startSize: 50,
+							endSize: 50,
+							radius: 98
+						  });
+
+						  gauge
+							.label(1)
+							.text('Poor')
+							.fontColor('#212121')
+							.fontSize(14)
+							.offsetY('68%')
+							.offsetX(25)
+							.anchor('center');
+
+						  gauge
+							.label(2)
+							.text('Average')
+							.fontColor('#212121')
+							.fontSize(14)
+							.offsetY('68%')
+							.offsetX(90)
+							.anchor('center');
+
+						  gauge
+							.label(3)
+							.text('Good')
+							.fontColor('#212121')
+							.fontSize(14)
+							.offsetY('68%')
+							.offsetX(155)
+							.anchor('center');
+
+						  gauge.container('container');
+						  gauge.draw();
+						  
+						  
+					} catch (error) {
+						console.error('Error fetching data:', error);
+					}
+				}
+				setInterval(fetchData, 1000); // Fetch every second
+				fetchData(); // Initial call
+		});
+    </script>
+</body>
+</html>
