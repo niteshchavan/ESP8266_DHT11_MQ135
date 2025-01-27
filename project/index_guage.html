@@ -1,0 +1,99 @@
+<html>
+<title>Sensor Dashboard</title>
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>Local Gauge</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+    .gauge {
+      width: 200px;
+      height: 100px;
+      margin: 20px auto;
+      position: relative;
+    }
+    .gauge .needle {
+      width: 4px;
+      height: 90px;
+      background: red;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform-origin: bottom;
+      transform: rotate(0deg);
+    }
+    .gauge .dial {
+      position: absolute;
+      width: 200px;
+      height: 100px;
+      border-top: 10px solid #ccc;
+      border-radius: 200px 200px 0 0;
+      top: 10px;
+      left: 0;
+    }
+    .gauge .labels {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      top: 100px;
+      width: 100%;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sensor Dashboard</h1>
+  <div class="gauge">
+    <div class="needle" id="needle"></div>
+    <div class="dial"></div>
+    <div class="labels">
+      <span>0</span>
+
+      <span>100</span>
+    </div>
+  </div>
+  <h2 id="data-display">Loading...</h2>
+
+  <script>
+async function fetchData() {
+  try {
+    const response = await fetch('/getData');
+    const data = await response.json();
+    console.log("Fetched data:", data);
+
+    // Safely parse numeric values
+    const ppm = parseFloat(data.smoke) || 0; // Default to 0 if invalid
+    const temperature = parseFloat(data.temperature) || 0;
+    const humidity = parseFloat(data.humidity) || 0;
+
+    // Update gauge needle
+    const needle = document.getElementById("needle");
+    const rotation = Math.min(Math.max(ppm)); // Convert to 0-180 range
+    needle.style.transform = `rotate(${rotation}deg)`;
+	console.log(rotation)
+
+    // Update displayed data
+    const display = document.getElementById("data-display");
+    display.textContent = `Temperature: ${temperature.toFixed(1)}°C, Humidity: ${humidity.toFixed(1)}%, Smoke: ${ppm.toFixed(1)} PPM`;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    // Optional: Update UI with error message
+    const display = document.getElementById("data-display");
+    display.textContent = "Error fetching data. Please check your connection.";
+  }
+}
+
+
+    setInterval(fetchData, 10000); // Fetch data every second
+    fetchData(); // Initial call
+  </script>
+</body>
+</html>
